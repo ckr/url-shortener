@@ -1,0 +1,8 @@
+{
+  "@aws-cdk/core:enableStackNameDuplicates": "true",
+  "aws-cdk:enableDiffNoFail": "true",
+  "hosted-zone:account=254091221340:domainName=ckr.cy:region=eu-west-1": {
+    "Id": "/hostedzone/ZLPUWEF2UL1KB",
+    "Name": "ckr.cy."
+  }
+}

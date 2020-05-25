@@ -8,20 +8,25 @@
     "build": "tsc",
     "watch": "tsc -w",
     "test": "jest",
-    "cdk": "cdk"
+    "cdk": "cdk",
+    "deploy": "npm run build && cdk deploy"
   },
   "devDependencies": {
-    "@aws-cdk/assert": "1.27.0",
+    "@aws-cdk/assert": "^1.41.0",
     "@types/jest": "^24.0.22",
     "@types/node": "10.17.5",
-    "jest": "^24.9.0",
+    "aws-cdk": "^1.41.0",
+    "jest": "^25.5.4",
     "ts-jest": "^24.1.0",
-    "aws-cdk": "1.27.0",
-    "ts-node": "^8.1.0",
+    "ts-node": "^8.10.1",
     "typescript": "~3.7.2"
   },
   "dependencies": {
-    "@aws-cdk/core": "1.27.0",
-    "source-map-support": "^0.5.16"
+    "@aws-cdk/aws-cloudfront": "^1.41.0",
+    "@aws-cdk/aws-route53-targets": "^1.41.0",
+    "@aws-cdk/aws-s3": "^1.41.0",
+    "@aws-cdk/aws-s3-deployment": "^1.41.0",
+    "@aws-cdk/core": "^1.41.0",
+    "source-map-support": "^0.5.19"
   }
 }
