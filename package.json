@@ -1,15 +1,15 @@
 {
-  "name": "ckr-cy-url-shortener",
+  "name": "url-shortener",
   "version": "0.1.0",
   "bin": {
-    "ckr-cy-url-shortener": "bin/ckr-cy-url-shortener.js"
+    "url-shortener": "bin/url-shortener.js"
   },
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w",
     "test": "jest",
     "cdk": "cdk",
-    "deploy": "npm run build && cdk deploy"
+    "deploy": "npm run build && cdk deploy '*'"
   },
   "devDependencies": {
     "@aws-cdk/assert": "^1.41.0",

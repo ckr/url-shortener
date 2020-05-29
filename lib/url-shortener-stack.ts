@@ -1,5 +1,6 @@
 import * as cdk from '@aws-cdk/core';
 import { Bucket } from '@aws-cdk/aws-s3';
+import { Asset } from '@aws-cdk/aws-s3-assets';
 import { BucketDeployment, Source } from '@aws-cdk/aws-s3-deployment';
 import { Duration, RemovalPolicy, Stack } from '@aws-cdk/core';
 import {
@@ -26,10 +27,10 @@ import {
     Code as LamdaCode
 } from '@aws-cdk/aws-lambda';
 
-export class CkrCyUrlShortenerStack extends cdk.Stack {
+export class UrlShortenerStack extends cdk.Stack {
     private certAttr: CertificateAttributes;
     private bucket: Bucket;
-    readonly meRedirect = 'https://kouloumbris.com';
+    private meRedirect: string;
 
     /**
      * Creates an s3 bucket with default life cycle rules under the u prefix
@@ -58,6 +59,22 @@ export class CkrCyUrlShortenerStack extends cdk.Stack {
         });
     }
 
+    createPermanentRedirectLink(file: string, redirect: string, distribution: CloudFrontWebDistribution) {
+        new BucketDeployment(this, `DeployPLinks-${file}`, {
+            sources: [
+                Source.asset('./assets/p', {
+                    exclude: [ '*', `!${file}` ]
+                })
+            ],
+            destinationBucket: this.bucket,
+            destinationKeyPrefix: 'p',
+            contentType: 'text/html',
+            websiteRedirectLocation: redirect,
+            distribution: distribution,
+            distributionPaths: [ `/p/${file}` ]
+        });
+    }
+
     getStackStringParam(key: string): string {
         return this.node.tryGetContext('stack_params')[key];
     }
@@ -67,6 +84,7 @@ export class CkrCyUrlShortenerStack extends cdk.Stack {
         this.certAttr = certAttr;
 
         this.createS3Bucket('Bucket', this.certAttr.zoneName);
+        this.meRedirect = this.getStackStringParam('meRedirect');
 
         const shortLamda = new LamdaFunction(this, 'ShortnerLamda', {
             runtime: LamdaRuntime.NODEJS_12_X,
@@ -86,8 +104,6 @@ export class CkrCyUrlShortenerStack extends cdk.Stack {
         const api = new RestApi(this, 'ShortnerApi', {
             restApiName: 'Lambda Shortener Service',
             description: 'Rest API for URL Shortener',
-            // handler: shortLamda,
-            // proxy: false,
         });
 
         const integration = new LambdaIntegration(shortLamda, {
@@ -98,9 +114,6 @@ export class CkrCyUrlShortenerStack extends cdk.Stack {
                     statusCode: '200',
                 }
             ],
-            // requestTemplates: {
-            //     'application/json': JSON.stringify({ 'statusCode': '200' })
-            // }
         });
 
         api.root.addMethod('POST', integration, {
@@ -186,7 +199,7 @@ export class CkrCyUrlShortenerStack extends cdk.Stack {
         const bucketDeployRoot = new BucketDeployment(this, 'DeployRootFiles', {
             sources: [
                 Source.asset('./assets', {
-                    exclude: ['./p/**', '.DS_Store']
+                    exclude: ['p/**', '.DS_Store']
                 }),
             ],
             destinationBucket: this.bucket,
@@ -194,19 +207,7 @@ export class CkrCyUrlShortenerStack extends cdk.Stack {
             distributionPaths: ['/*']
         });
 
-        const bucketDeployPLinks = new BucketDeployment(this, 'DeployPLinks', {
-            sources: [
-                Source.asset('./assets/p', {
-                    exclude: ['.DS_Store'] 
-                })
-            ],
-            destinationBucket: this.bucket,
-            destinationKeyPrefix: 'p',
-            contentType: 'text/html',
-            websiteRedirectLocation: this.meRedirect,
-            distribution: cloudFront,
-            distributionPaths: ['/p/*']
-        });
+        this.createPermanentRedirectLink('me', this.meRedirect, cloudFront);
 
         const record = new ARecord(this, 'ARecord', {
             recordName: this.certAttr.zoneName,

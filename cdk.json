@@ -1,16 +1,21 @@
 {
-  "app": "npx ts-node bin/ckr-cy-url-shortener.ts",
-  "context": {
-    "stack_tags": {
-      "Application": "CKrCyShortUrl",
-      "OwningTeam": "Personal"
-    },
-    "aws_env_details": {
-      "account": "254091221340",
-      "region": "eu-west-1"
-    },
-    "stack_params": {
-      "dnsZoneName": "ckr.cy"
+    "app": "npx ts-node bin/url-shortener.ts",
+    "context": {
+        "stack_tags": {
+            "Application": "ShortUrl",
+            "OwningTeam": "Personal"
+        },
+        "aws_env_details": {
+            "account": "254091221340",
+            "region": "eu-west-1"
+        },
+        "stack_params": {
+            "dnsZoneName": "ckr.cy",
+            "subjectAlternativeNames": [
+                "*.ckr.cy"
+            ],
+            "meRedirect": "https://kouloumbris.com",
+            "bookMeRedirect": "https://vyte.in/justckr"
+        }
     }
-  }
 }
