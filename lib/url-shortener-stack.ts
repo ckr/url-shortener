@@ -1,8 +1,7 @@
 import * as cdk from '@aws-cdk/core';
 import { Bucket } from '@aws-cdk/aws-s3';
-import { Asset } from '@aws-cdk/aws-s3-assets';
 import { BucketDeployment, Source } from '@aws-cdk/aws-s3-deployment';
-import { Duration, RemovalPolicy, Stack } from '@aws-cdk/core';
+import { Duration, RemovalPolicy, Stack, CfnOutput } from '@aws-cdk/core';
 import {
     CloudFrontWebDistribution,
     SSLMethod,
@@ -13,22 +12,33 @@ import {
 } from '@aws-cdk/aws-cloudfront';
 import { ARecord, RecordTarget } from '@aws-cdk/aws-route53';
 import { CloudFrontTarget } from '@aws-cdk/aws-route53-targets';
-import { CertificateAttributes } from './url-shortner-cert-stack';
 import {
     RestApi,
-    LambdaRestApi,
     LambdaIntegration,
-    PassthroughBehavior,
-    IntegrationType
+    PassthroughBehavior
 } from '@aws-cdk/aws-apigateway';
 import {
     Function as LamdaFunction,
     Runtime as LamdaRuntime,
     Code as LamdaCode
 } from '@aws-cdk/aws-lambda';
+import { Config } from './config';
 
 export class UrlShortenerStack extends cdk.Stack {
-    private certAttr: CertificateAttributes;
+    constructor(id: string, config: Config) {
+        super(config.getApp(), id, {
+            env: config.getParam('aws_env_details'),
+            tags: config.getParam('stack_tags'),
+            description: 'Serverless private URL shortener based on Amazon S3, AWS Lambda, Amazon CloudFront and API Gateway.',
+        });
+
+        config.urlSuffix = this.urlSuffix;
+        config.region = this.region;
+        new UrlShortener(this, 'UrlShortener', config);
+    }
+}
+
+export class UrlShortener extends cdk.Construct {
     private bucket: Bucket;
     private meRedirect: string;
 
@@ -63,7 +73,7 @@ export class UrlShortenerStack extends cdk.Stack {
         new BucketDeployment(this, `DeployPLinks-${file}`, {
             sources: [
                 Source.asset('./assets/p', {
-                    exclude: [ '*', `!${file}` ]
+                    exclude: ['**', `!${file}`]
                 })
             ],
             destinationBucket: this.bucket,
@@ -71,20 +81,15 @@ export class UrlShortenerStack extends cdk.Stack {
             contentType: 'text/html',
             websiteRedirectLocation: redirect,
             distribution: distribution,
-            distributionPaths: [ `/p/${file}` ]
+            distributionPaths: [`/p/${file}`]
         });
     }
 
-    getStackStringParam(key: string): string {
-        return this.node.tryGetContext('stack_params')[key];
-    }
+    constructor(scope: cdk.Construct, id: string, config: Config) {
+        super(scope, id);
 
-    constructor(scope: cdk.Construct, id: string, certAttr: CertificateAttributes, props?: cdk.StackProps) {
-        super(scope, id, props);
-        this.certAttr = certAttr;
-
-        this.createS3Bucket('Bucket', this.certAttr.zoneName);
-        this.meRedirect = this.getStackStringParam('meRedirect');
+        this.createS3Bucket('Bucket', config.zoneName);
+        this.meRedirect = config.getStackParam('meRedirect');
 
         const shortLamda = new LamdaFunction(this, 'ShortnerLamda', {
             runtime: LamdaRuntime.NODEJS_12_X,
@@ -156,7 +161,7 @@ export class UrlShortenerStack extends cdk.Stack {
                     originPath: '',
                     customOriginSource: {
                         //TODO: This is a hack find a way to fix
-                        domainName: `${api.restApiId}.execute-api.${this.region}.${this.urlSuffix}`,
+                        domainName: `${api.restApiId}.execute-api.${config.region}.${config.urlSuffix}`,
                         originProtocolPolicy: OriginProtocolPolicy.MATCH_VIEWER,
                     },
                     behaviors: [
@@ -164,7 +169,7 @@ export class UrlShortenerStack extends cdk.Stack {
                             pathPattern: '/prod/*',
                             allowedMethods: CloudFrontAllowedMethods.ALL,
                             cachedMethods: CloudFrontAllowedCachedMethods.GET_HEAD_OPTIONS,
-                            
+
                         }
                     ]
                 },
@@ -189,8 +194,8 @@ export class UrlShortenerStack extends cdk.Stack {
                 }
             ],
             aliasConfiguration: {
-                acmCertRef: this.certAttr.certificate.certificateArn,
-                names: [this.certAttr.zoneName],
+                acmCertRef: config.certificate.certificateArn,
+                names: [config.zoneName],
                 sslMethod: SSLMethod.SNI,
                 securityPolicy: SecurityPolicyProtocol.TLS_V1_2_2018
             }
@@ -210,9 +215,11 @@ export class UrlShortenerStack extends cdk.Stack {
         this.createPermanentRedirectLink('me', this.meRedirect, cloudFront);
 
         const record = new ARecord(this, 'ARecord', {
-            recordName: this.certAttr.zoneName,
-            zone: this.certAttr.zone,
+            recordName: config.zoneName,
+            zone: config.zone,
             target: RecordTarget.fromAlias(new CloudFrontTarget(cloudFront))
         });
+
+        new CfnOutput(this, 'ShortUrlDns', { value: `https://${record.domainName}` });
     }
 }
