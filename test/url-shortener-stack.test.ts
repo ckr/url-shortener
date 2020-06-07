@@ -34,22 +34,22 @@ describe('Test url shortener setup', function () {
         const config = new Config(app.app);
         new CertificateManager(app.stack, 'CertManagerSetup', config);
         new UrlShortener(app.stack, 'UrlShortenerSetup', config);
-        // expect(app.stack).to(haveResource('AWS::S3::Bucket', {
-        //     'BucketName': 'example.com',
-        //     'LifecycleConfiguration': {
-        //         'Rules': [
-        //             {
-        //                 'ExpirationInDays': 7,
-        //                 'Id': 'DisposeShortUrls',
-        //                 'Prefix': 'u',
-        //                 'Status': 'Enabled'
-        //             }
-        //         ]
-        //     },
-        //     'WebsiteConfiguration': {
-        //         'ErrorDocument': 'error.html',
-        //         'IndexDocument': 'index.html'
-        //     }
-        // }));
+        expect(app.stack).to(haveResource('AWS::S3::Bucket', {
+            'BucketName': 'example.com',
+            'LifecycleConfiguration': {
+                'Rules': [
+                    {
+                        'ExpirationInDays': 7,
+                        'Id': 'DisposeShortUrls',
+                        'Prefix': 'u',
+                        'Status': 'Enabled'
+                    }
+                ]
+            },
+            'WebsiteConfiguration': {
+                'ErrorDocument': 'error.html',
+                'IndexDocument': 'index.html'
+            }
+        }));
     });
 });
