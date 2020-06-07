@@ -1,6 +1,18 @@
 {
   "name": "url-shortener",
+  "description": "Serverless private URL shortener based on Amazon S3, AWS Lambda, Amazon CloudFront and API Gateway.",
+  "keywords": [ "serverless", "api-gateway", "s3", "lambda", "cloudfront", "aws-cdk", "url-shortener" ],
   "version": "0.1.0",
+  "author": {
+    "name": "Constantinos Kouloumbris",
+    "email": "c@kouloumbris.com",
+    "url": "https://kouloumbris.com"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ckr/url-shortener.git"
+  },
   "bin": {
     "url-shortener": "bin/url-shortener.js"
   },
