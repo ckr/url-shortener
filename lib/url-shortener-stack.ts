@@ -94,7 +94,7 @@ export class UrlShortener extends cdk.Construct {
         const shortLamda = new LamdaFunction(this, 'ShortnerLamda', {
             runtime: LamdaRuntime.NODEJS_12_X,
             handler: 'index.handler',
-            code: LamdaCode.fromAsset('lambda'),
+            code: LamdaCode.fromAsset('./lambda'),
             environment: {
                 'S3_BUCKET': this.bucket.bucketName,
                 'S3_PREFIX': 'u',
