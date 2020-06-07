@@ -27,7 +27,7 @@
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w",
-    "test": "./node_modules/jest/bin/jest.js",
+    "test": "jest",
     "cdk": "cdk"
   },
   "devDependencies": {
