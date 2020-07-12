@@ -29,7 +29,7 @@ export class CertificateManager extends Construct {
             subjectAlternativeNames: config.subjectAlternativeNames,
             hostedZone: config.zone,
             validationMethod: ValidationMethod.DNS,
-            region: 'us-east-1' // CloudFront only supports us-east-1 certs from ACM,,,,,,,,,,,
+            region: 'us-east-1' // CloudFront only supports us-east-1 certs from ACM
         });
     }
 }
