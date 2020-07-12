@@ -4,3 +4,7 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
+    automerged_updates:
+      - match:
+        dependency_type: "all"
+        update_type: "semver:minor"
