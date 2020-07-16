@@ -1,136 +1,154 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="utf-8">
-		<title>CKs URL shortener</title>
-		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css">
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
-		<script src="https://stackpath.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<meta name="description" content="Just a personal url shortener">
-		<meta name="author" content="Constantinos Kouloumbris">
-		<script type="text/javascript">
 
-	    $(document).ready(function() {
+<head>
+	<!-- Global site tag (gtag.js) - Google Analytics -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=UA-172875104-1"></script>
+	<script>
+		window.dataLayer = window.dataLayer || [];
+		function gtag() { dataLayer.push(arguments); }
+		gtag('js', new Date());
 
-	        // used only to allow local serving of files
-	        $.ajaxSetup({
-	            beforeSend: function(xhr) {
-	                if (xhr.overrideMimeType) {
-	                    xhr.overrideMimeType("application/json");
-	                }
-	            }
-	        });
+		gtag('config', 'UA-172875104-1');
+	</script>
+	<meta charset="utf-8">
+	<title>CKs URL shortener</title>
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.0.3/css/bootstrap.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+	<script src="https://stackpath.bootstrapcdn.com/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="description" content="Just a personal url shortener">
+	<meta name="author" content="Constantinos Kouloumbris">
+	<script type="text/javascript">
 
-	        $('#url_input').focus();    // set initial focus
+		$(document).ready(function () {
 
-	        $('form#submit').submit(function(event) {
-	            $('#url_input_submit').prop('disabled', true);
+			// used only to allow local serving of files
+			$.ajaxSetup({
+				beforeSend: function (xhr) {
+					if (xhr.overrideMimeType) {
+						xhr.overrideMimeType("application/json");
+					}
+				}
+			});
 
-	            // process the form
-	            $.ajax({
-	                type        : 'POST',
-	                url         : '/prod/',
-	                data        : JSON.stringify({ 'url_long' : $('#url_input').val(), 'cdn_prefix': window.location.hostname }),
-	                contentType : 'application/json; charset=utf-8',
-	                dataType    : 'json',
-	                encode      : true
-	            })
-	            .done(function(data,textStatus, jqXHR) {
-	                $('#url_input_submit').prop('disabled', false);
-	                if (data.error) {
-	                    $('#url-group').addClass('has-error'); // add the error class to show red input
-	                    $('#url-error').show().text(data.error); // add the actual error message under our input
-	                } else {
-	                    $('form#submit').hide();        // hide initial submit form
-	                    $('form#result').show();        // and show the one used to display the results
-	                    $('#url_long').text(data.url_long);
-	                    $('#url_short').val(data.url_short).focus().select();
-	                }
-	            })
-	            .fail(function(_, _, errorThrown) {
-	                $('#url_input_submit').prop('disabled', false);
-	                $('#url-group').addClass('has-error'); // add the error class to show red input
-	                $('#url-error').show().text("Server error: "+errorThrown); // add the actual error message under our input
-	            });
+			$('#url_input').focus();    // set initial focus
 
-	            // stop the form from submitting the normal way and refreshing the page
-	            event.preventDefault();
-	        });
-	    
-	        $('form#result').submit(function(event) {
-	            event.preventDefault();
-	        });
+			$('form#submit').submit(function (event) {
+				$('#url_input_submit').prop('disabled', true);
 
-	        $('form#result button').click(function(event) {
-	        
-	            event.preventDefault();
+				// process the form
+				$.ajax({
+					type: 'POST',
+					url: '/prod/',
+					data: JSON.stringify({ 'url_long': $('#url_input').val(), 'cdn_prefix': window.location.hostname }),
+					contentType: 'application/json; charset=utf-8',
+					dataType: 'json',
+					encode: true
+				})
+					.done(function (data, textStatus, jqXHR) {
+						$('#url_input_submit').prop('disabled', false);
+						if (data.error) {
+							$('#url-group').addClass('has-error'); // add the error class to show red input
+							$('#url-error').show().text(data.error); // add the actual error message under our input
+						} else {
+							$('form#submit').hide();        // hide initial submit form
+							$('form#result').show();        // and show the one used to display the results
+							$('#url_long').text(data.url_long);
+							$('#url_short').val(data.url_short).focus().select();
+						}
+					})
+					.fail(function (_, _, errorThrown) {
+						$('#url_input_submit').prop('disabled', false);
+						$('#url-group').addClass('has-error'); // add the error class to show red input
+						$('#url-error').show().text("Server error: " + errorThrown); // add the actual error message under our input
+					});
 
-	            console.log($(this).attr("value"));
-	            if ($(this).attr('value') == 'copy_link') {
-	                console.log('copy_link');
-	                /* Get the text field */
-	                var copyText = document.getElementById("url_short");
+				// stop the form from submitting the normal way and refreshing the page
+				event.preventDefault();
+			});
 
-	                /* Select the text field */
-	                copyText.select();
+			$('form#result').submit(function (event) {
+				event.preventDefault();
+			});
 
-	                /* Copy the text inside the text field */
-	                document.execCommand("copy");
+			$('form#result button').click(function (event) {
 
-	                /* Alert the copied text */
-	                $('#copy_link').popover('show').html('Copied!');
-	                setTimeout(function(){
-	                	$('#copy_link').popover('hide');
-	                }, 2000);
-	            } else {
-	                console.log('reload');
-	                location.reload();
-	            }
-	        });
+				event.preventDefault();
 
-	        $(function () {
-	            $('[data-toggle="tooltip"]').tooltip()
-	        });
+				console.log($(this).attr("value"));
+				if ($(this).attr('value') == 'copy_link') {
+					console.log('copy_link');
+					/* Get the text field */
+					var copyText = document.getElementById("url_short");
 
-	    });
-	    </script>
-	</head>
-	<body>
-		<div class="container">
-			<div class="row logo">
-				<div class="col-lg-8 col-lg-offset-2">
-					<h1 style="text-align: center;"><img src="logo.png" width="40px" /> CKs URL shortener</h1>
-				</div>
+					/* Select the text field */
+					copyText.select();
+
+					/* Copy the text inside the text field */
+					document.execCommand("copy");
+
+					/* Alert the copied text */
+					$('#copy_link').popover('show').html('Copied!');
+					setTimeout(function () {
+						$('#copy_link').popover('hide');
+					}, 2000);
+				} else {
+					console.log('reload');
+					location.reload();
+				}
+			});
+
+			$(function () {
+				$('[data-toggle="tooltip"]').tooltip()
+			});
+
+		});
+	</script>
+</head>
+
+<body>
+	<div class="container">
+		<div class="row logo">
+			<div class="col-lg-8 col-lg-offset-2">
+				<h1 style="text-align: center;"><img src="logo.png" width="40px" /> CKs URL shortener</h1>
 			</div>
 		</div>
-		<div class="container">
-			<div id="url-group" class="row">
-				<div class="col-lg-12">
-					<form id="submit">
+	</div>
+	<div class="container">
+		<div id="url-group" class="row">
+			<div class="col-lg-12">
+				<form id="submit">
+					<div class="input-group">
+						<input type="url" required class="form-control" name="url"
+							placeholder="Paste here the long URL here" id="url_input" />
+						<span class="input-group-btn"><button type="submit" class="btn btn-large btn-primary"
+								id="url_input_submit">Shorten</button></span>
+					</div>
+					<div class="help-block" style="display: none" id="url-error"></div>
+				</form>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-lg-12">
+				<form id="result" style="display: none">
+					<div class="alert alert-success">Successfully shortened: <br /><span id="url_long"></span></div>
+					<div class="form-group">
+						<label for="name">You can now copy/paste the short URL</label>
 						<div class="input-group">
-							<input type="url" required class="form-control" name="url" placeholder="Paste here the long URL here" id="url_input"/>
-							<span class="input-group-btn"><button type="submit" class="btn btn-large btn-primary" id="url_input_submit">Shorten</button></span>
+							<input type="text" class="form-control" name="url" readonly="readonly" id="url_short">
+							<span class="input-group-btn"><button class="btn btn-large btn-success" type="submit"
+									id="copy_link" value="copy_link" data-container="body" data-toggle="popover"
+									data-placement="top" title=""
+									data-content="Link copied to clipboard">Copy</button></span>
 						</div>
-						<div class="help-block" style="display: none" id="url-error"></div>
-					</form>
-				</div>
-			</div>
-			<div class="row">
-				<div class="col-lg-12">
-					<form id="result" style="display: none">
-				        <div class="alert alert-success">Successfully shortened: <br/><span id="url_long"></span></div>
-				        <div class="form-group">
-				            <label for="name">You can now copy/paste the short URL</label>
-				            <div class="input-group">
-				                <input type="text" class="form-control" name="url" readonly="readonly" id="url_short">
-				                <span class="input-group-btn"><button class="btn btn-large btn-success" type="submit" id="copy_link" value="copy_link" data-container="body" data-toggle="popover" data-placement="top" title="" data-content="Link copied to clipboard">Copy</button></span>
-				            </div>
-				        </div><button type="submit" class="btn btn-primary" id="page_reload">New URL</button><div>
-				        </div>
-				    </form>
-				</div>
+					</div><button type="submit" class="btn btn-primary" id="page_reload">New URL</button>
+					<div>
+					</div>
+				</form>
 			</div>
 		</div>
-	</body>
+	</div>
+</body>
+
 </html>
