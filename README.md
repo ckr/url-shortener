@@ -1,5 +1,7 @@
 # Welcome to URL Shortener.
 
+[![Maintainability](https://api.codeclimate.com/v1/badges/4572fe1b50e246343eb1/maintainability)](https://codeclimate.com/github/ckr/url-shortener/maintainability)
+
 This builds a custom serverless private URL shortener based on Amazon S3, AWS Lambda, Amazon CloudFront and API Gateway.
 
 The `cdk.json` file tells the CDK Toolkit how to execute the app.
