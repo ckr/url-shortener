@@ -2,6 +2,16 @@
 
 exports[`Test url shortener setup should create a Url Shortner Stack based on the snap shot taken 1`] = `
 Object {
+  "Mappings": Object {
+    "AWSCloudFrontPartitionHostedZoneIdMap": Object {
+      "aws": Object {
+        "zoneId": "Z2FDTNDATAQYW2",
+      },
+      "aws-cn": Object {
+        "zoneId": "Z3RFFRIM2A3IF5",
+      },
+    },
+  },
   "Outputs": Object {
     "UrlShortenerSetupShortUrlDns44FD5FA4": Object {
       "Value": Object {
@@ -64,18 +74,6 @@ Object {
       "Description": "S3 key for asset version \\"9166eac021c77b7929d9fad357444ef21e7a3f5988e20f8debe3047fe8cb1300\\"",
       "Type": "String",
     },
-    "AssetParametersa9125fa9a40550c71cde90bd478cc23091e868067a12380c1df0827d013ad2ffArtifactHash08605F5E": Object {
-      "Description": "Artifact hash for asset \\"a9125fa9a40550c71cde90bd478cc23091e868067a12380c1df0827d013ad2ff\\"",
-      "Type": "String",
-    },
-    "AssetParametersa9125fa9a40550c71cde90bd478cc23091e868067a12380c1df0827d013ad2ffS3Bucket848A1F31": Object {
-      "Description": "S3 bucket for asset \\"a9125fa9a40550c71cde90bd478cc23091e868067a12380c1df0827d013ad2ff\\"",
-      "Type": "String",
-    },
-    "AssetParametersa9125fa9a40550c71cde90bd478cc23091e868067a12380c1df0827d013ad2ffS3VersionKey983DBE96": Object {
-      "Description": "S3 key for asset version \\"a9125fa9a40550c71cde90bd478cc23091e868067a12380c1df0827d013ad2ff\\"",
-      "Type": "String",
-    },
     "AssetParametersada100798dc1f8e235b8d571b7cdec9fb0aecb9c292c55a040f145ebd580b495ArtifactHashAC99E6D0": Object {
       "Description": "Artifact hash for asset \\"ada100798dc1f8e235b8d571b7cdec9fb0aecb9c292c55a040f145ebd580b495\\"",
       "Type": "String",
@@ -98,6 +96,18 @@ Object {
     },
     "AssetParametersc4fb861fd869d124b8cfc58999aaf72afa00e470d0db2a6bcc3dd14aa0f1f3d7S3VersionKeyB425BE6A": Object {
       "Description": "S3 key for asset version \\"c4fb861fd869d124b8cfc58999aaf72afa00e470d0db2a6bcc3dd14aa0f1f3d7\\"",
+      "Type": "String",
+    },
+    "AssetParametersc9ac4b3b65f3510a2088b7fd003de23d2aefac424025eb168725ce6769e3c176ArtifactHash4E343C6C": Object {
+      "Description": "Artifact hash for asset \\"c9ac4b3b65f3510a2088b7fd003de23d2aefac424025eb168725ce6769e3c176\\"",
+      "Type": "String",
+    },
+    "AssetParametersc9ac4b3b65f3510a2088b7fd003de23d2aefac424025eb168725ce6769e3c176S3Bucket77147E20": Object {
+      "Description": "S3 bucket for asset \\"c9ac4b3b65f3510a2088b7fd003de23d2aefac424025eb168725ce6769e3c176\\"",
+      "Type": "String",
+    },
+    "AssetParametersc9ac4b3b65f3510a2088b7fd003de23d2aefac424025eb168725ce6769e3c176S3VersionKey4253216F": Object {
+      "Description": "S3 key for asset version \\"c9ac4b3b65f3510a2088b7fd003de23d2aefac424025eb168725ce6769e3c176\\"",
       "Type": "String",
     },
   },
@@ -262,7 +272,7 @@ Object {
       "Properties": Object {
         "Code": Object {
           "S3Bucket": Object {
-            "Ref": "AssetParametersa9125fa9a40550c71cde90bd478cc23091e868067a12380c1df0827d013ad2ffS3Bucket848A1F31",
+            "Ref": "AssetParametersc9ac4b3b65f3510a2088b7fd003de23d2aefac424025eb168725ce6769e3c176S3Bucket77147E20",
           },
           "S3Key": Object {
             "Fn::Join": Array [
@@ -275,7 +285,7 @@ Object {
                       "Fn::Split": Array [
                         "||",
                         Object {
-                          "Ref": "AssetParametersa9125fa9a40550c71cde90bd478cc23091e868067a12380c1df0827d013ad2ffS3VersionKey983DBE96",
+                          "Ref": "AssetParametersc9ac4b3b65f3510a2088b7fd003de23d2aefac424025eb168725ce6769e3c176S3VersionKey4253216F",
                         },
                       ],
                     },
@@ -288,7 +298,7 @@ Object {
                       "Fn::Split": Array [
                         "||",
                         Object {
-                          "Ref": "AssetParametersa9125fa9a40550c71cde90bd478cc23091e868067a12380c1df0827d013ad2ffS3VersionKey983DBE96",
+                          "Ref": "AssetParametersc9ac4b3b65f3510a2088b7fd003de23d2aefac424025eb168725ce6769e3c176S3VersionKey4253216F",
                         },
                       ],
                     },
@@ -489,7 +499,15 @@ Object {
               "DomainName",
             ],
           },
-          "HostedZoneId": "Z2FDTNDATAQYW2",
+          "HostedZoneId": Object {
+            "Fn::FindInMap": Array [
+              "AWSCloudFrontPartitionHostedZoneIdMap",
+              Object {
+                "Ref": "AWS::Partition",
+              },
+              "zoneId",
+            ],
+          },
         },
         "HostedZoneId": "DUMMY",
         "Name": "example.com.",
@@ -738,6 +756,8 @@ Object {
           "IPV6Enabled": true,
           "Origins": Array [
             Object {
+              "ConnectionAttempts": 3,
+              "ConnectionTimeout": 10,
               "CustomOriginConfig": Object {
                 "HTTPPort": 80,
                 "HTTPSPort": 443,
@@ -768,6 +788,8 @@ Object {
               "OriginPath": "",
             },
             Object {
+              "ConnectionAttempts": 3,
+              "ConnectionTimeout": 10,
               "CustomOriginConfig": Object {
                 "HTTPPort": 80,
                 "HTTPSPort": 443,
@@ -793,6 +815,8 @@ Object {
               "OriginPath": "",
             },
             Object {
+              "ConnectionAttempts": 3,
+              "ConnectionTimeout": 10,
               "CustomOriginConfig": Object {
                 "HTTPPort": 80,
                 "HTTPSPort": 443,
@@ -831,7 +855,7 @@ Object {
                 "Arn",
               ],
             },
-            "MinimumProtocolVersion": "TLSv1.2_2018",
+            "MinimumProtocolVersion": "TLSv1.2_2019",
             "SslSupportMethod": "sni-only",
           },
         },
@@ -851,6 +875,7 @@ Object {
         "DistributionPaths": Array [
           "/p/me",
         ],
+        "Prune": true,
         "ServiceToken": Object {
           "Fn::GetAtt": Array [
             "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536",
@@ -917,6 +942,7 @@ Object {
         "DistributionPaths": Array [
           "/*",
         ],
+        "Prune": true,
         "ServiceToken": Object {
           "Fn::GetAtt": Array [
             "CustomCDKBucketDeployment8693BB64968944B69AAFB0CC9EB8756C81C01536",
