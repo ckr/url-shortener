@@ -197,7 +197,7 @@ export class UrlShortener extends cdk.Construct {
                 acmCertRef: config.certificate.certificateArn,
                 names: [config.zoneName],
                 sslMethod: SSLMethod.SNI,
-                securityPolicy: SecurityPolicyProtocol.TLS_V1_2_2018
+                securityPolicy: SecurityPolicyProtocol.TLS_V1_2_2019
             }
         });
 
