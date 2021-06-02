@@ -16,6 +16,6 @@ jobs:
           uses: actions/setup-node@v1
           with:
             node-version: ${{ env.NODE_VERSION }}
-        - run: yarn add
+        - run: yarn upgrade
         - run: yarn run build --if-present
         - run: yarn run test
