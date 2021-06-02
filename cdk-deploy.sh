@@ -1,5 +1,5 @@
 #!/bin/zsh
 
-npm run build
-npm run test
+yarn run build
+yarn run test
 cdk deploy '*'

@@ -1,7 +1,6 @@
-import * as cdk from '@aws-cdk/core';
 import { Bucket } from '@aws-cdk/aws-s3';
 import { BucketDeployment, Source } from '@aws-cdk/aws-s3-deployment';
-import { Duration, RemovalPolicy, Stack, CfnOutput } from '@aws-cdk/core';
+import { Duration, RemovalPolicy, Stack, Construct, CfnOutput } from '@aws-cdk/core';
 import {
     CloudFrontWebDistribution,
     SSLMethod,
@@ -24,7 +23,7 @@ import {
 } from '@aws-cdk/aws-lambda';
 import { Config } from './config';
 
-export class UrlShortenerStack extends cdk.Stack {
+export class UrlShortenerStack extends Stack {
     constructor(id: string, config: Config) {
         super(config.getApp(), id, {
             env: config.getParam('aws_env_details'),
@@ -38,7 +37,7 @@ export class UrlShortenerStack extends cdk.Stack {
     }
 }
 
-export class UrlShortener extends cdk.Construct {
+export class UrlShortener extends Construct {
     private bucket: Bucket;
     private meRedirect: string;
 
@@ -85,7 +84,7 @@ export class UrlShortener extends cdk.Construct {
         });
     }
 
-    constructor(scope: cdk.Construct, id: string, config: Config) {
+    constructor(scope: Construct, id: string, config: Config) {
         super(scope, id);
 
         this.createS3Bucket('Bucket', config.zoneName);

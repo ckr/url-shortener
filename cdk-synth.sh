@@ -1,4 +1,4 @@
 #!/bin/zsh
 
-npm run build
+yarn run build
 cdk synth '*'
